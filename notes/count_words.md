@@ -9,7 +9,7 @@
 3. The function should return the number of words (string parts that are separate).
     - The output should be the number of string sections which are separated by spaces.
 
-4. The function should count only proper words - not numberals or punctuation.
+4. The function should count only proper words - not numerals or punctuation.
     - The output should be the number of string sections which are separated by spaces and are also solely alphabetic (with the exception of punctuation at the end of a section).
 
 ## Test Driving
