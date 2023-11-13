@@ -73,31 +73,31 @@
 ## Test-Driving Development
 1.
     a. Create test_wrong_type() to check whether the input is a string. ![Image of code for test](./images/03_read_time/read_time_test_1.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_time_code_1.png)
     - Test passes!
 
     b. Create test_empty_string() to check that the estimated reading time is output in the correct format. ![Image of code for test](./images/03_read_time/read_time_test_2.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_time_code_2.png)
     - Test passes!
 
     c. Create test_short_string() to check that the estimated reading time is correct and in the expected format. ![Image of code for test](./images/03_read_time/read_time_test_3.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_time_code_3.png)
     - Test passes!
 
     d. Create test_long_string() to check that the estimated reading time is correct and in the expected format, even when the string would take minutes to read. ![Image of code for test](./images/03_read_time/read_time_test_4.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_text_code_4.png)
     - Test passes!
 
     e. Create test_newlines() to check that the estimated reading time is correct and in the expected format, even when the string contains multiple lines. ![Image of code for test](./images/03_read_time/read_text_test_5.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_text_code_5.png)
     - Test passes!
 
     f. Create test_double_spaced() to check that the estimated reading time is correct and in the expected format, even when the string contains whitespaces which do not separate words. ![Image of code for test](./images/03_read_time/read_text_test_6.png)
-    - Test fails: reason.
+    - Test fails.
     - Write code: ![Image of code to pass test](./images/03_read_time/read_text_code_6.png)
     - Test passes!
