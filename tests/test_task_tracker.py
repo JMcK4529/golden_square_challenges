@@ -38,8 +38,6 @@ def test_mark_complete():
     tracker.mark_complete('A test task')
     assert tracker.list_tasks() == ['Another test task']
     
-    
-
 def test_mark_complete_nonexist_exception():
     # what happens if you try to complete something that doesn't exist?
     tracker = TaskTracker()
