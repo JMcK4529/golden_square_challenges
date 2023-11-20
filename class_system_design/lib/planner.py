@@ -125,4 +125,3 @@ class Planner:
             raise ValueError(f"TodoList contains no task {todo.task}")
         else:
             todo.mark_complete()
-

@@ -47,6 +47,12 @@ def test_read_diary_entry_by_title_no_diary():
         planner.read_diary_entry_by_title(None)
     assert str(err.value) == "Planner has no diary"
 
+def test_read_diary_entry_chunk_no_diary():
+    with pytest.raises(Exception) as err:
+        planner = Planner()
+        planner.read_diary_entry_chunk("",1,1)
+    assert str(err.value) == "Planner has no diary"
+
 def test_read_diary_entry_by_time_no_diary():
     with pytest.raises(Exception) as err:
         planner = Planner()

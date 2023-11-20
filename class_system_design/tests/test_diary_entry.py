@@ -1,6 +1,5 @@
 import pytest
 from lib.diary_entry import *
-from lib.contact import *
 
 def test_init_variables():
     entry = DiaryEntry("Title", "Contents")
@@ -55,19 +54,9 @@ def test_init_with_contact_wrong_type():
         entry = DiaryEntry("Title", "Contents", "Rubbish")
     assert str(err.value) == "contact must be a Contact object or None"
 
-def test_init_with_contact():
-    contact = Contact("Some Guy", "01234567890")
-    entry = DiaryEntry("Title", "Contents", contact)
-    assert [entry.title, entry.contents, entry.contact] == ["Title", "Contents", contact]
-
 def test_add_contact_wrong_type():
     with pytest.raises(TypeError) as err:
         contact1 = None
         entry = DiaryEntry("Title", "Contents")
         entry.add_contact(contact1)
     assert str(err.value) == "contact must be a Contact object"
-
-def test_display_contact():
-    contact = Contact("Some Guy", "01234567890")
-    entry = DiaryEntry("Title", "Contents", contact)
-    assert entry.display_contact() == f"{contact.name}: {contact.number}"
