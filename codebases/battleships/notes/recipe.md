@@ -90,7 +90,8 @@ As a player
 So that I can have a coherent game
 I would like ships to be constrained to be on the board
 ```
-Not yet implemented.
+~~Not yet implemented.~~
+Implemented in Game.place_ship method.
 
 ```
 As a player
@@ -133,3 +134,20 @@ So that I can play against a human opponent
 I would like to play a two-player game
 ```
 Not yet implemented.
+
+### Next Steps
+
+#### Constrain ships to the board.
+- If a ShipPlacement has parameters which would place the ship over the edge of the board, prevent this behaviour and ask for a different input.
+- Cannot choose row < 0, col < 0
+- Cannot choose row > Game.rows, col > Game.cols
+- When orientation "horizontal":
+    - Cannot choose col > Game.cols - length
+- When orientation "vertical":
+    - Cannot choose row > Game.rows - length
+- Asking for a different input means changing Game.place_ship so it validates inputs, and using a try/except in UserInterface._prompt_for_ship_placement so that it only proceeds once a valid input is taken
+
+> This is now passing tests for the first ship placement.  
+> Will have to expand test when additional ships can be placed. Expect passes because UserInterface._prompt_for_ship_placement has been changed, and this same method can be called to get future ship positions.
+
+#### 

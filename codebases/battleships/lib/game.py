@@ -18,13 +18,18 @@ class Game:
         ]
 
     def place_ship(self, length, orientation, row, col):
-        ship_placement = ShipPlacement(
-            length=length,
-            orientation=orientation,
-            row=row,
-            col=col,
-        )
-        self.ships_placed.append(ship_placement)
+        if row <= 0 or col <= 0 \
+        or (orientation == "horizontal" and col + length > self.cols) \
+        or (orientation == "vertical" and row + length > self.rows):
+            raise Exception("Ship overlaps board edge")
+        else:
+            ship_placement = ShipPlacement(
+                length=length,
+                orientation=orientation,
+                row=row,
+                col=col,
+            )
+            self.ships_placed.append(ship_placement)
 
     def ship_at(self, row, col):
         for ship_placement in self.ships_placed:
