@@ -22,7 +22,23 @@ class Game:
         or (orientation == "horizontal" and col + length > self.cols) \
         or (orientation == "vertical" and row + length > self.rows):
             raise Exception("Ship overlaps board edge")
+        elif orientation == "horizontal" and \
+                                        any(
+                                            [self.ship_at(row, check_col) 
+                                            for check_col
+                                            in range(col, col + length)]
+                                            ):
+            raise Exception("Ship overlaps a previously placed ship")
+        elif orientation == "vertical" and \
+                                        any(
+                                            [self.ship_at(check_row, col)
+                                            for check_row
+                                            in range(row, row + length)]
+                                            ):
+            raise Exception("Ship overlaps a previously placed ship")
         else:
+            print(any([self.ship_at(row, check_col) for check_col in range(col, col + length + 1)]))
+            print(any([self.ship_at(col, check_row) for check_row in range(col, col + length + 1)]))
             ship_placement = ShipPlacement(
                 length=length,
                 orientation=orientation,

@@ -1,5 +1,6 @@
 import pytest
 import unittest
+import copy
 from lib.game import *
 from lib.ship_placement import *
 from lib.ship import *
@@ -22,7 +23,76 @@ def test_game_place_ship_constraint_to_board():
                     assert str(err.value) == "Ship overlaps board edge"
 
 def test_game_place_ship_constraint_no_overlap():
-    pass
+    # setup horizontal obstacle
+    # e.g. game.place_ship(obstacle_length, "horizontal", obstacle_row, obstacle_col)
+    # place new ship
+    # assert raise Exception if overlap
+    # e.g. [ship_length, "vertical", range(obstacle_row, obstacle_row - ship_length), range(obstacle_col,obstacle_col + obstacle_length)]
+    # setup vertical obstacle
+    # e.g. game.place_ship(obstacle_length, "vertical", obstacle_row, obstacle_col)
+    # place new ship
+    # assert raise Exception if overlap
+    # e.g. [ship_length, "horizontal", range(obstacle_col, obstacle_col - ship_length), range(obstacle_row,obstacle_row + obstacle_length)]
+    
+    """
+    Horizontal obstacle, vertical place
+    """
+    game_list = []
+    placement_list = []
+    game_rows = 10
+    game_cols = 10
+    obs_orient = "horizontal"
+    for obs_length in range(2, 6):
+        for obs_row in range(1, 11):
+            for obs_col in range(1, game_cols - obs_length):
+                game = Game(game_rows, game_cols)
+                game.place_ship(obs_length, obs_orient, obs_row, obs_col)
+                game_list.append(game)
+                placement_list.append({"len": obs_length, "ori": obs_orient, "row": obs_row, "col": obs_col})
+    
+    ship_orient = "vertical"
+    for game, obstacle in zip(game_list, placement_list):
+        game_cache = copy.copy(game)
+        for ship_length in range(2, 6):
+            for ship_row in range(max(obstacle["row"] - ship_length + 1, 1), min(obstacle["row"], game_rows - ship_length + 1)):
+                for ship_col in range(obstacle["col"], obstacle["col"] + obstacle["len"]):
+                    len = obstacle["len"]
+                    row = obstacle["row"]
+                    col = obstacle["col"]
+                    print(f"OBS>> len: {len}, row: {row}, col: {col}")
+                    print(f"SHIP>> len: {ship_length}, row: {ship_row}, col: {ship_col}")
+                    with pytest.raises(Exception) as err:
+                        game.place_ship(ship_length, ship_orient, ship_row, ship_col)
+                    assert str(err.value) == "Ship overlaps a previously placed ship"
+                    game = game_cache
+
+    """
+    Vertical obstacle, horizontal place
+    """
+    game_list = []
+    placement_list = []
+    game_rows = 10
+    game_cols = 10
+    obs_orient = "vertical"
+    for obs_length in range(2, 6):
+        for obs_col in range(1, 11):
+            for obs_row in range(1, game_rows - obs_length):
+                game = Game(game_rows, game_cols)
+                game.place_ship(obs_length, obs_orient, obs_row, obs_col)
+                game_list.append(game)
+                placement_list.append({"len": obs_length, "ori": obs_orient, "row": obs_row, "col": obs_col})
+
+    ship_orient = "horizontal"
+    for game, obstacle in zip(game_list, placement_list):
+        game_cache = copy.copy(game)
+        for ship_length in range(2, 6):
+            for ship_row in range(min(obstacle["col"], game_rows - ship_length + 1), max(obstacle["col"] - ship_length + 1, 1)):
+                for ship_col in range(obstacle["row"] + obstacle["len"], obstacle["col"]):
+                    with pytest.raises(Exception) as err:
+                        game.place_ship(ship_length, ship_orient, ship_row, ship_col)
+                    assert str(err.value) == "Ship overlaps a previously placed ship"
+                    game = game_cache
+
 
 class TestUserInterface(unittest.TestCase):
     def test_ships_constrained_to_board_in_interface(self):
@@ -35,25 +105,18 @@ class TestUserInterface(unittest.TestCase):
                 first_row_choices = [str(row) for row in list(range(1, 11))]
                 first_col_choices = [str(col) for col in [0] + list(range(11 - int(ship_choice), 11))]
                 second_col_choices = [str(col) for col in list(range(1, 11 - int(ship_choice)))]
-                print(first_row_choices)
                 for row_choice in first_row_choices:
                     for col_choice in first_col_choices:
                         for col_choice_2 in second_col_choices:
                             row_choice_2 = row_choice
 
-                            #print(row_choice, ":", col_choice, "\n", row_choice_2, ":", col_choice_2)
-                            #if orient_choice == "v":
-                            #    row_choice, row_choice_2, col_choice, col_choice_2 = col_choice, col_choice_2, row_choice, row_choice_2
-                            
-                            print("before build")
-                            print(orient_choice,row_choice_2,col_choice_2)
                             game_board_builder = Game()
                             if orient_choice == "h":
                                 build_row, build_col, build_orient = int(row_choice_2), int(col_choice_2), "horizontal"
                             else:
                                 build_col, build_row, build_orient = int(row_choice_2), int(col_choice_2), "vertical"
                             game_board_builder.place_ship(int(ship_choice), build_orient, build_row, build_col)
-                            print("after build place")
+
                             expected_board_state = []
                             for row in range(1, game_board_builder.rows + 1):
                                 cells = []
@@ -66,8 +129,7 @@ class TestUserInterface(unittest.TestCase):
                             expected_board_state = "\n".join(expected_board_state)
                             game_board_builder = Game()
                             game = Game()
-                            print(f"Ship: {ship_choice}\nChoice 1: {orient_choice}({row_choice}, {col_choice})\nChoice 2: {orient_choice}({row_choice_2}, {col_choice_2})")
-                            
+   
                             io = TerminalInterfaceHelperMock()
                             interface = UserInterface(io, game)
                             io.expect_print("Welcome to the game!")
@@ -91,3 +153,4 @@ class TestUserInterface(unittest.TestCase):
                             io.expect_print(expected_board_state)
                             io.expect_print("Done, for now!")
                             interface.run()
+    

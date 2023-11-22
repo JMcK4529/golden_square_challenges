@@ -68,7 +68,9 @@ As a player
 So that I can play a more interesting game
 I would like to have a range of ship sizes to choose from
 ```
-Already implemented.
+Ship choices already implemented.
+Single ship placement already implemented.
+Multiple ship placement not yet implemented in Game or UserInterface.
 
 ```
 As a player
@@ -76,7 +78,10 @@ So the game is more fun to play
 I would like a nice command line interface that lets me enter ship positions and
 shots using commands.
 ```
-Already implemented.
+Interface already implemented.
+Single ship placement already implemented.
+Multiple ship placement not yet implemented in Game or UserInterface.
+Shot functionality not yet implemented in Game or UserInterface.
 
 ```
 As a player
@@ -91,14 +96,16 @@ So that I can have a coherent game
 I would like ships to be constrained to be on the board
 ```
 ~~Not yet implemented.~~
-Implemented in Game.place_ship method.
+~~Implemented in Game.place_ship method, not yet handled in UserInterface.~~
+Implemented in Game.place_ship method and exception handling implemented in UserInterface.
 
 ```
 As a player
 So that I can have a coherent game
 I would like ships to be constrained not to overlap
 ```
-Not yet implemented.
+~~Not yet implemented.~~
+Implemented in Game.place_ship method, not yet handled in UserInterface.
 
 ```
 As a player
@@ -150,4 +157,34 @@ Not yet implemented.
 > This is now passing tests for the first ship placement.  
 > Will have to expand test when additional ships can be placed. Expect passes because UserInterface._prompt_for_ship_placement has been changed, and this same method can be called to get future ship positions.
 
-#### 
+## Design Ideas
+
+### The Game Board - Hits and Misses
+The player game board looks like this: 
+```python
+..........
+...S......
+...S......
+...S......
+..........
+....SSSS..
+..........
+..........
+..........
+..........  
+``` 
+Where `S` is a cell occupied by part of a ship.  
+The player should see the opponent's board like this:  
+```python
+...O......
+...X......
+...X......
+..........
+..........
+......X...
+..........
+....OO....
+..........
+..........  
+```
+Where `X` denotes a hit, and `O` denotes a miss.
