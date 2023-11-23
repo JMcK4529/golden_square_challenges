@@ -1,16 +1,20 @@
+import copy
+
 class UserInterface:
     def __init__(self, io, game):
         self.io = io
         self.game = game
+        self.opponent_game = copy.copy(game)
 
     def run(self):
         self._show("Welcome to the game!")
         self._show("Set up your ships first.")
-        self._show("You have these ships remaining: {}".format(
-            self._ships_unplaced_message()))
-        self._prompt_for_ship_placement()
-        self._show("This is your board now:")
-        self._show(self._format_board())
+        while len(self.game.unplaced_ships()) > 0:
+            self._show("You have these ships remaining: {}".format(
+                self._ships_unplaced_message()))
+            self._prompt_for_ship_placement()
+            self._show("This is your board now:")
+            self._show(self._format_board())
 
     def _show(self, message):
         self.io.write(message + "\n")
@@ -53,3 +57,12 @@ class UserInterface:
                     row_cells.append(".")
             rows.append("".join(row_cells))
         return "\n".join(rows)
+    
+    def generate_opponent_board(self):
+        for args in zip([2,3,3,4,5],
+                        ["horizontal","horizontal",
+                         "vertical","horizontal",
+                         "vertical"],
+                         [2,3,4,8,1], 
+                         [2,3,6,2,10]):
+            self.opponent_game.place_ship(args[0], args[1], args[2], args[3])

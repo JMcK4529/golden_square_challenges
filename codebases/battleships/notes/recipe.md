@@ -105,7 +105,8 @@ So that I can have a coherent game
 I would like ships to be constrained not to overlap
 ```
 ~~Not yet implemented.~~
-Implemented in Game.place_ship method, not yet handled in UserInterface.
+~~Implemented in Game.place_ship method, not yet handled in UserInterface.~~
+Implemented in Game.place_ship method and handled in UserInterface.
 
 ```
 As a player
@@ -152,10 +153,76 @@ Not yet implemented.
     - Cannot choose col > Game.cols - length
 - When orientation "vertical":
     - Cannot choose row > Game.rows - length
-- Asking for a different input means changing Game.place_ship so it validates inputs, and using a try/except in UserInterface._prompt_for_ship_placement so that it only proceeds once a valid input is taken
+- Asking for a different input when an illegal ship placement is declared means changing Game.place_ship method so it validates inputs, and using a try/except in UserInterface._prompt_for_ship_placement method so that it only proceeds once a valid input is taken
+- Write a test that uses lots of game board sizes, ship sizes and ship placements, making sure that whenever either end of the ship is < 0 or > Game.cols or > Game.rows we raise an Exception
 
 > This is now passing tests for the first ship placement.  
-> Will have to expand test when additional ships can be placed. Expect passes because UserInterface._prompt_for_ship_placement has been changed, and this same method can be called to get future ship positions.
+> [TODO]: Will have to expand test when additional ships can be placed. Expect passes because UserInterface._prompt_for_ship_placement has been changed, and this same method can be called to get future ship positions.
+
+#### Disallow ship overlaps.
+- We can achieve this with argument validation in Game.place_ship method (similar to above)
+- Call the first placed ship "obstacle". Call the second ship "ship".
+- Write a test that uses lots of obstacle sizes and placements (and both orientations), then test that an exception is raised whenever the ship is placed in a way that would make it overlap the obstacle at any point
+
+> This passes the test using Game.place_ship
+> [TODO]: Test in the user interface
+> [TODO]: Test with multiple ships
+
+#### Add multiple ships to the board.
+- We start with 5 ships of different lengths, and should be able to place them all on the board.
+- We should keep asking the user to choose a ship and place it until there are no ships left to place
+- We can implement the asking with a while loop and expansion of UserInterface.run method
+- Write a test that uses the terminal_interface_helper_mock to check that ship placements are requested until all ships have been placed
+
+> Test written and passed!
+
+#### Declare shots.
+- Add a method to Game & UserInterface to allow the player to start making shots.
+- Should be able to declare row and col
+- Should store all shots made in a variable in Game
+- Write a test that checks for functionality like this:
+```python
+game = Game()
+game.make_shot(1, 1) # => returns nothing but adds (1,1) to game.shots_made
+game.shots_made # => [(1, 1)]
+game.make_shot(6,8)
+game.shots_made # => [(1, 1), (6, 8)]
+```
+
+> Test written and passed.
+
+#### Construct the opponent (computer) board.
+- Add a method to UserInterface which creates a layout of ships in an instance of Game
+- Write a test to confirm that UserInterface.genetate_opponent_board stores a list of ship placements inside UserInterface.opponent_game as expected
+
+> Test written and passed.
+
+#### Import shots from opponent game.
+- Create a method in Game which takes an opponent_game (instance of Game) as an argument
+- It should use opponent_game.shots_made to work out what has been hit or missed, then update some class variable to store that information
+- Write a test to check that shots made in opponent_game can be accessed by a player_game and update variable player_game.shots_recieved
+
+> Test written and passed.
+
+#### Implement ship sinking logic in Game.
+- Keep track of each ship's hits, and use number of hits vs. length to work out if it has sunk.
+- Consider Game.ships_placed = {ship_length: {"pos": [pos1, pos2, pos3, ...], "hits": [hit1, hit2, hit3, ...], "sunk": False}}
+- Then use Game.import_shots method to look for hits and sunk ships each time shots are imported
+- Write a test that checks the state of the Game.ships_placed dictionary before and after making shots and importing them to the game instance
+
+> Test written and passed
+
+#### Has the player won or lost?
+- When importing shots, we reference the opponent game and so can check whether the player has won the game (if the opponent was informed they lost last time they imported shots) - we can store this in a class variable => Game.game_state = "playing", or "won", or "lost"
+- When importing shots, check whether all the ships are sunk (in which case player has lost the game!)
+- Write a test that checks that the game_state is "lost" when all the player's ships have sunk
+- Also check that the game_state is "won" when all opponent's ships have sunk
+
+#### Format player board with hits and misses.
+
+#### Format opponent board (shown to player) with hits and misses.
+
+#### 
 
 ## Design Ideas
 
@@ -188,3 +255,16 @@ The player should see the opponent's board like this:
 ..........  
 ```
 Where `X` denotes a hit, and `O` denotes a miss.
+
+```python
+22........
+.3........
+.3........
+.3..333...
+..........
+....4.....
+....4.....
+....4.....
+....4.....
+.....55555  
+```
