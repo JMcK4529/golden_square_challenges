@@ -219,10 +219,29 @@ game.shots_made # => [(1, 1), (6, 8)]
 - Also check that the game_state is "won" when all opponent's ships have sunk
 
 #### Format player board with hits and misses.
+- "X" for a hit, "S" for an unhit ship, "O" for a miss and "." for an unoccupied & unshot cell (see Design Ideas)
+- Write a test to check that format board outputs "X" wherever there is a hit, "S" wherever there is an unhit part of a ship, "O" wherever there was a missed shot and "." otherwise
+- Testing UserInterface._format_board ... probably not good practice, but calling directly avoids the need to set up the full program in test
+
+> Test written and passed
 
 #### Format opponent board (shown to player) with hits and misses.
+- "X" for a hit, "O" for a miss and "." otherwise. No "S" should appear as ships should be hidden from the player
+- Write a test to check that format board outputs "X" wherever there is a hit, "O" wherever there was a missed shot and "." otherwise
+- Testing UserInterface._format_board ... probably not good practice, but calling directly avoids the need to set up the full program in test
 
-#### 
+> 
+
+#### Make UserInterface.run capable of handling the full game logic and board outputs.
+- Write a test using the Terminal Mock Helper which follows an example game
+
+> 
+
+#### Make UserInterface.run expect two human players.
+- Write a test using the Terminal Mock Helper which checks that a second player (p2) is asked to place all their ships after the first player (p1)
+- Also test that both p1_game and p2_game have the correct ship placements stored
+
+> 
 
 ## Design Ideas
 
@@ -255,16 +274,3 @@ The player should see the opponent's board like this:
 ..........  
 ```
 Where `X` denotes a hit, and `O` denotes a miss.
-
-```python
-22........
-.3........
-.3........
-.3..333...
-..........
-....4.....
-....4.....
-....4.....
-....4.....
-.....55555  
-```

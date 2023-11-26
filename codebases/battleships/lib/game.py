@@ -11,7 +11,7 @@ class Game:
         self.ships_placed = {}
         self.ships_unplaced = ships.copy()
         self.shots_made = []
-        self.shots_received = None
+        self.shots_received = []
         self.game_state = "playing"
 
     def unplaced_ships(self):
@@ -21,7 +21,7 @@ class Game:
         if row <= 0 or col <= 0 \
             or (orientation == "horizontal" and col + length - 1 > self.cols) \
                 or (orientation == "vertical" and row + length - 1 > self.rows):
-            raise Exception("Ship overlaps board edge")
+            raise Exception("Oops! That ship overlaps the board edge!")
         
         elif orientation == "horizontal" and \
                                         any(
@@ -29,7 +29,7 @@ class Game:
                                             for check_col
                                             in range(col, col + length)]
                                             ):
-            raise Exception("Ship overlaps a previously placed ship")
+            raise Exception("Oops! That ship overlaps a previously placed ship!")
         
         elif orientation == "vertical" and \
                                         any(
@@ -37,7 +37,7 @@ class Game:
                                             for check_row
                                             in range(row, row + length)]
                                             ):
-            raise Exception("Ship overlaps a previously placed ship")
+            raise Exception("Oops! That ship overlaps a previously placed ship!")
         else:
             ship_placement = ShipPlacement(
                 length=length,
@@ -61,7 +61,8 @@ class Game:
                 if self.ships_unplaced[i].length == length:
                     self.ships_placed.update(
                         {
-                        self.ships_unplaced.pop(i).length: {
+                        f"ship{len(self.ships_placed)}": {
+                            "length": self.ships_unplaced.pop(i).length,
                             "position": position, "hits": [], "sunk": False
                             }
                         }
@@ -85,11 +86,17 @@ class Game:
     def import_shots(self, opponent_game):
         self.shots_received = opponent_game.shots_made
         for shot in self.shots_received:
-            for ship_length in self.ships_placed.keys():
-                if shot in self.ships_placed[ship_length]["position"]:
-                    self.ships_placed[ship_length]["hits"].append(shot)
-                if set(self.ships_placed[ship_length]["position"]) == \
-                                set(self.ships_placed[ship_length]["hits"]):
-                    self.ships_placed[ship_length]["sunk"] = True
-        if all([self.ships_placed[length]["sunk"] for length in self.ships_placed.keys()]):
+            for ship in self.ships_placed.keys():
+                if shot in self.ships_placed[ship]["position"]:
+                    self.ships_placed[ship]["hits"].append(shot)
+                if set(self.ships_placed[ship]["position"]) == \
+                                set(self.ships_placed[ship]["hits"]):
+                    self.ships_placed[ship]["sunk"] = True
+        if all([self.ships_placed[ship]["sunk"] for ship in self.ships_placed.keys()]):
             self.game_state = "lost"
+    
+    def check_win(self, opponent_game):
+        if opponent_game.game_state == "lost":
+            self.game_state = "won"
+            return True
+        return False
