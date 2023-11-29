@@ -8,6 +8,8 @@ pytest = "*"
 mock = "*"
 pip = "*"
 requests = "*"
+decouple = "*"
+twilio = "*"
 
 [dev-packages]
 
