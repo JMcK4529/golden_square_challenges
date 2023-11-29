@@ -12,6 +12,8 @@ class Order:
         """Adds quantity of item to the order - stored in .items"""
         if not self.menu.is_dish(item):
             raise ValueError(f"{item} is not on the menu")
+        elif quantity <= 0:
+            raise ValueError("Cannot add less than 1 to the order")
         elif not item in self.items.keys():
             self.items.update({item: quantity})
             self._verified = False

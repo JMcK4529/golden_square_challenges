@@ -58,6 +58,16 @@ def test_add_non_menu_item_raises_exception():
     assert str(err.value) == "Zebrafish Steak is not on the menu"
     menu_mock.is_dish.assert_called_with("Zebrafish Steak")
 
+def test_add_less_than_one_raises_exception():
+    """Checks that a quantity <= 0 cannot be added to .items"""
+    menu_mock = Mock()
+    menu_mock.is_dish.return_value = True
+    order = Order(menu_mock)
+    for quantity in [0, -1, -2]:
+        with pytest.raises(ValueError) as err:
+            order.add_item("Apple Pie", quantity)
+        assert str(err.value) == "Cannot add less than 1 to the order"
+
 def test_remove_item_updates_items_dict():
     """Checks that .remove_item adjusts quantities in .items"""
     menu_mock = Mock()

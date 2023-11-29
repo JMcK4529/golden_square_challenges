@@ -1,4 +1,5 @@
 import pytest
+import os
 from lib.menu import Menu
 from unittest.mock import Mock
 
@@ -26,7 +27,7 @@ def test_get_price_raises_exception_if_not_in_menu():
     the menu"""
     menu = Menu()
     for dish in ["Coffee Cake", "Doughnut", "Eclair", "Flapjack"]:
-        with pytest.raises(Exception) as err:
+        with pytest.raises(ValueError) as err:
             menu.get_price(dish)
         assert str(err.value) == f"{dish} is not on the menu"
 
@@ -55,5 +56,48 @@ def test_order_time_for_unverified_order():
     order.is_verified.return_value = False
     menu = Menu()
     with pytest.raises(Exception) as err:
-        menu.order_time()
+        menu.order_time(order)
     assert str(err.value) == "Order must be verified to deliver"
+
+def test_send_notification_for_verified_order():
+    account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    from_phone = os.environ['TWILIO_PHONE']
+    to_phone = os.environ['PERSONAL_PHONE']
+
+    Client = Mock()
+    client_instance = Client.return_value
+    client_instance.messages.create = Mock()
+
+    menu = Menu()
+    order = Mock()
+    order.items = {"Apple Pie": 1, "Banana Split": 3}
+    order.is_verified.return_value = True
+    order.show.return_value = "Your current order is:\n" + \
+                            "1x Apple Pie @ £3.50\n" + \
+                            "3x Banana Split @ £4.99\n" + \
+                            "---\n" + \
+                            "Total = £18.47\n" + \
+                            "---"
+    
+    notification = menu.send_notification(order, Client, to_phone)
+
+    Client.assert_called_once_with(account_sid, auth_token)
+    client_instance.messages.create.assert_called_once_with(
+                        to=to_phone, 
+                        from_=from_phone, 
+                        body="Your order will be with you in 55 minutes!\n" +
+                            "Order summary:\n" +
+                            "1x Apple Pie @ £3.50\n" +
+                            "3x Banana Split @ £4.99\n" +
+                            "---\n" +
+                            "Total = £18.47\n" +
+                            "---"
+                        )
+    assert notification == "Your order will be with you in 55 minutes!\n" + \
+                            "Order summary:\n" + \
+                            "1x Apple Pie @ £3.50\n" + \
+                            "3x Banana Split @ £4.99\n" + \
+                            "---\n" + \
+                            "Total = £18.47\n" + \
+                            "---"
