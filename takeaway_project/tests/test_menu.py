@@ -67,6 +67,51 @@ def test_send_notification_for_verified_order():
 
     Client = Mock()
     client_instance = Client.return_value
+    notif = Mock
+    receipt = "Your current order is:\n" + \
+            "1x Apple Pie @ £3.50\n" + \
+            "3x Banana Split @ £4.99\n" + \
+            "---\n" + \
+            "Total = £18.47\n" + \
+            "---"
+    notif.body = receipt
+    client_instance.messages.create = Mock(side_effect=notif)
+
+    menu = Menu()
+    order = Mock()
+    order.items = {"Apple Pie": 1, "Banana Split": 3}
+    order.is_verified.return_value = True
+    order.show.return_value = receipt
+    
+    notification = menu.send_notification(order, to_phone, Client)
+    Client.assert_called_once_with(account_sid, auth_token)
+    client_instance.messages.create.assert_called_once_with(
+                        to=to_phone, 
+                        from_=from_phone, 
+                        body="Your order will be with you in 55 minutes!\n" +
+                            "Order summary:\n" +
+                            "1x Apple Pie @ £3.50\n" +
+                            "3x Banana Split @ £4.99\n" +
+                            "---\n" +
+                            "Total = £18.47\n" +
+                            "---"
+                        )
+    assert notification.body == "Your order will be with you in 55 minutes!\n" + \
+                            "Order summary:\n" + \
+                            "1x Apple Pie @ £3.50\n" + \
+                            "3x Banana Split @ £4.99\n" + \
+                            "---\n" + \
+                            "Total = £18.47\n" + \
+                            "---"
+    
+def test_send_notification_corrects_numbers_starting_with_07():
+    account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    from_phone = os.environ['TWILIO_PHONE']
+    to_phone = "07700900714"
+
+    Client = Mock()
+    client_instance = Client.return_value
     client_instance.messages.create = Mock()
 
     menu = Menu()
@@ -80,11 +125,11 @@ def test_send_notification_for_verified_order():
                             "Total = £18.47\n" + \
                             "---"
     
-    notification = menu.send_notification(order, Client, to_phone)
+    menu.send_notification(order, to_phone, Client)
 
     Client.assert_called_once_with(account_sid, auth_token)
     client_instance.messages.create.assert_called_once_with(
-                        to=to_phone, 
+                        to="+447700900714", 
                         from_=from_phone, 
                         body="Your order will be with you in 55 minutes!\n" +
                             "Order summary:\n" +
@@ -94,10 +139,3 @@ def test_send_notification_for_verified_order():
                             "Total = £18.47\n" +
                             "---"
                         )
-    assert notification == "Your order will be with you in 55 minutes!\n" + \
-                            "Order summary:\n" + \
-                            "1x Apple Pie @ £3.50\n" + \
-                            "3x Banana Split @ £4.99\n" + \
-                            "---\n" + \
-                            "Total = £18.47\n" + \
-                            "---"

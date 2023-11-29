@@ -9,6 +9,7 @@ class Order:
         return self._verified
     
     def add_item(self, item, quantity):
+        quantity = int(quantity)
         """Adds quantity of item to the order - stored in .items"""
         if not self.menu.is_dish(item):
             raise ValueError(f"{item} is not on the menu")
@@ -24,6 +25,7 @@ class Order:
     def remove_item(self, item, quantity):
         """Removes quantity of item from the order, and removes item as a
         key from .items if .items[item] = 0"""
+        quantity = int(quantity)
         if not item in self.items.keys():
             raise ValueError(f"{item} is not in the order")
         elif quantity > self.items[item]:

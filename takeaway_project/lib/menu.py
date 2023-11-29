@@ -1,4 +1,6 @@
 import os
+from twilio.rest import Client
+from lib.NotificationError import NotificationError
 
 class Menu:
     def __init__(self):
@@ -34,16 +36,21 @@ class Menu:
         else:
             raise Exception("Order must be verified to deliver")
     
-    def send_notification(self, order, ClientClass, customer_phone):
+    def send_notification(self, order, customer_phone, ClientClass=Client):
         account_sid = os.environ['TWILIO_ACCOUNT_SID']
         auth_token = os.environ['TWILIO_AUTH_TOKEN']
         from_phone = os.environ['TWILIO_PHONE']
     
         client = ClientClass(account_sid, auth_token)
-        message = f"Your order will be with you in {self.order_time(order)} minutes!\n" + \
+        message = "Your order will be with you in " + \
+            f"{self.order_time(order)} minutes!\n" + \
             "Order summary:\n" + \
-                f"{order.show()[23:]}"
-        client.messages.create(to=customer_phone, 
-                               from_=from_phone, 
-                               body=message)
-        return message
+            f"{order.show()[23:]}"
+        customer_phone = "".join(["+44", customer_phone[-10:]])
+        try:
+            notification = client.messages.create(to=customer_phone, 
+                                from_=from_phone, 
+                                body=message)
+            return notification
+        except Exception:
+            return NotificationError()

@@ -22,14 +22,15 @@ def test_is_verified_returns_false_immediately():
     assert order.is_verified() == False
 
 def test_add_item_updates_items_dict():
-    """Checks that .add_item updates .items with name and quantity of dish"""
+    """Checks that .add_item updates .items with name and quantity of dish
+    Implicitly tests that add can handle string quantities"""
     menu_mock = Mock()
     menu_mock.is_dish.return_value = True
     order = Order(menu_mock)
-    order.add_item("Apple Pie", 1)
+    order.add_item("Apple Pie", "1")
     menu_mock.is_dish.assert_called_with("Apple Pie")
     assert order.items == {"Apple Pie": 1}
-    order.add_item("Banana Split", 4)
+    order.add_item("Banana Split", "4")
     menu_mock.is_dish.assert_called_with("Banana Split")
     assert order.items == {"Apple Pie": 1, "Banana Split": 4}
 
@@ -69,13 +70,14 @@ def test_add_less_than_one_raises_exception():
         assert str(err.value) == "Cannot add less than 1 to the order"
 
 def test_remove_item_updates_items_dict():
-    """Checks that .remove_item adjusts quantities in .items"""
+    """Checks that .remove_item adjusts quantities in .items
+    Implicitly tests that remove_item can handle string quantities"""
     menu_mock = Mock()
     menu_mock.is_dish.return_value = True
     order = Order(menu_mock)
     order.add_item("Apple Pie", 1)
     order.add_item("Banana Split", 4)
-    order.remove_item("Banana Split", 3)
+    order.remove_item("Banana Split", "3")
     assert order.items == {"Apple Pie": 1, "Banana Split": 1}
 
 def test_remove_item_full_quantity_removes_key_from_dict():
